@@ -39,18 +39,18 @@ const students: {
   { name: "Shahnoza Ergasheva", email: "shahnoza@school.edu",  group: "AX" },
 ];
 
-// Predefined scores per student (index-aligned) for reproducibility
+// Scores: attendance(0-10), homework(0-20), midterm(0-30), final(0-40) → total 100
 const scores = [
-  { attendance: 95, homework: 90, midterm: 88, final: 92 }, // Alice  — A
-  { attendance: 80, homework: 75, midterm: 70, final: 78 }, // Bob    — C
-  { attendance: 55, homework: 48, midterm: 50, final: 52 }, // Carol  — F (at risk)
-  { attendance: 100, homework: 95, midterm: 98, final: 97 }, // David  — A
-  { attendance: 72, homework: 68, midterm: 75, final: 80 }, // Emma   — C
-  { attendance: 60, homework: 62, midterm: 58, final: 65 }, // Frank  — D
-  { attendance: 88, homework: 85, midterm: 87, final: 90 }, // Grace  — A
-  { attendance: 78, homework: 80, midterm: 72, final: 75 }, // Henry  — C
-  { attendance: 92, homework: 88, midterm: 90, final: 95 }, // Isa    — A
-  { attendance: 40, homework: 35, midterm: 42, final: 38 }, // Jack   — F (at risk)
+  { attendance: 10, homework: 18, midterm: 26, final: 37 }, // Aziz     — 91 → 5
+  { attendance:  8, homework: 15, midterm: 21, final: 31 }, // Dilnoza  — 75 → 4
+  { attendance:  6, homework: 10, midterm: 15, final: 21 }, // Sardor   — 52 → 2 (xavf)
+  { attendance: 10, homework: 19, midterm: 29, final: 39 }, // Malika   — 97 → 5
+  { attendance:  7, homework: 14, midterm: 23, final: 32 }, // Jasur    — 76 → 4
+  { attendance:  6, homework: 12, midterm: 17, final: 26 }, // Nilufar  — 61 → 3
+  { attendance:  9, homework: 17, midterm: 26, final: 36 }, // Bobur    — 88 → 5
+  { attendance:  8, homework: 16, midterm: 22, final: 30 }, // Zulfiya  — 76 → 4
+  { attendance:  9, homework: 18, midterm: 27, final: 38 }, // Ulugbek  — 92 → 5
+  { attendance:  4, homework:  7, midterm: 13, final: 15 }, // Shahnoza — 39 → 2 (xavf)
 ];
 
 async function main() {
@@ -117,12 +117,12 @@ async function main() {
 
     // Assign grades for each subject with slight variation
     for (let j = 0; j < subjectRecords.length; j++) {
-      const variation = j * 3 - 5; // slight per-subject variation
+      const v = j - 2; // -2, -1, 0, 1, 2
       const inputs = {
-        attendance: Math.max(0, Math.min(100, score.attendance + variation)),
-        homework: Math.max(0, Math.min(100, score.homework - variation)),
-        midterm: Math.max(0, Math.min(100, score.midterm + Math.floor(variation / 2))),
-        final: Math.max(0, Math.min(100, score.final - Math.floor(variation / 3))),
+        attendance: Math.max(0, Math.min(10,  score.attendance + (v > 0 ? 1 : v < 0 ? -1 : 0))),
+        homework:   Math.max(0, Math.min(20,  score.homework   - v)),
+        midterm:    Math.max(0, Math.min(30,  score.midterm    + v)),
+        final:      Math.max(0, Math.min(40,  score.final      - Math.round(v / 2))),
       };
       const { totalScore, gradeLetter, gradePoints } = deriveGrade(inputs);
 

@@ -1,7 +1,7 @@
 /**
  * Core grading logic.
  *
- * Formula:  totalScore = 0.1×attendance + 0.2×homework + 0.3×midterm + 0.4×final
+ * Formula:  totalScore = attendance(0-10) + homework(0-20) + midterm(0-30) + final(0-40)
  *
  * O'zbek baholash tizimi:
  *   86–100 → 5 (A'lo)
@@ -21,7 +21,7 @@ export interface ScoreInputs {
 
 export function calculateTotalScore(inputs: ScoreInputs): number {
   const { attendance, homework, midterm, final } = inputs;
-  const score = 0.1 * attendance + 0.2 * homework + 0.3 * midterm + 0.4 * final;
+  const score = attendance + homework + midterm + final;
   return Math.round(score * 100) / 100;
 }
 
@@ -92,9 +92,8 @@ export function predictNeededFinal(
   current: Omit<ScoreInputs, "final">,
   targetTotal: number
 ): number {
-  const needed =
-    (targetTotal - 0.1 * current.attendance - 0.2 * current.homework - 0.3 * current.midterm) / 0.4;
-  return Math.max(0, Math.min(100, Math.round(needed * 100) / 100));
+  const needed = targetTotal - current.attendance - current.homework - current.midterm;
+  return Math.max(0, Math.min(40, Math.round(needed * 100) / 100));
 }
 
 /**
@@ -108,9 +107,9 @@ export function predictPerformance(inputs: Omit<ScoreInputs, "final">): {
 } {
   const { attendance, homework, midterm } = inputs;
 
-  const partial = 0.1 * attendance + 0.2 * homework + 0.3 * midterm;
-  const estimatedFinal = Math.min(100, midterm * 1.05);
-  const predictedScore = Math.round((partial + 0.4 * estimatedFinal) * 100) / 100;
+  const partial = attendance + homework + midterm;
+  const estimatedFinal = Math.min(40, Math.round(midterm * (40 / 30) * 1.05 * 100) / 100);
+  const predictedScore = Math.round((partial + estimatedFinal) * 100) / 100;
   const predictedGrade = calculateGradeLetter(predictedScore);
 
   const avg = (attendance + homework + midterm) / 3;
@@ -119,9 +118,9 @@ export function predictPerformance(inputs: Omit<ScoreInputs, "final">): {
     variance < 100 ? "high" : variance < 300 ? "medium" : "low";
 
   let recommendation = "";
-  if (attendance < 70) recommendation += "Darsga qatnashishni oshiring. ";
-  if (homework < 60) recommendation += "Uy vazifalarini bajarishga ko'proq vaqt ajrating. ";
-  if (midterm < 60) recommendation += "O'qituvchidan qo'shimcha yordam so'rang. ";
+  if (attendance < 7) recommendation += "Darsga qatnashishni oshiring. ";
+  if (homework < 12) recommendation += "Uy vazifalarini bajarishga ko'proq vaqt ajrating. ";
+  if (midterm < 18) recommendation += "O'qituvchidan qo'shimcha yordam so'rang. ";
   if (predictedScore >= 86) recommendation = "Zo'r natija! Shunday davom eting.";
   if (!recommendation) recommendation = "O'rtacha ko'rsatkich, chuqurroq o'rganishga harakat qiling.";
 

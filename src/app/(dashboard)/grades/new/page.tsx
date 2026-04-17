@@ -138,7 +138,7 @@ export default function AddGradePage() {
             <Calculator className="h-8 w-8 text-blue-600" />
             <div>
               <p className="text-sm text-muted-foreground">
-                Formula: 0.1×Davomat + 0.2×Uy vazifasi + 0.3×Oraliq + 0.4×Final
+                Formula: Davomat(10) + Uy vazifasi(20) + Oraliq(30) + Final(40) = 100 ball
               </p>
               <div className="flex items-center gap-3 mt-1">
                 <span className="text-3xl font-bold text-blue-600">{preview}</span>
@@ -245,10 +245,10 @@ export default function AddGradePage() {
               <div className="grid grid-cols-2 gap-4">
                 {(["attendance", "homework", "midterm", "final"] as const).map((field) => {
                   const labels = {
-                    attendance: "Davomat (0-100) × 10%",
-                    homework: "Uy vazifasi (0-100) × 20%",
-                    midterm: "Oraliq (0-100) × 30%",
-                    final: "Final imtihon (0-100) × 40%",
+                    attendance: "Davomat (0-10 ball)",
+                    homework: "Uy vazifasi (0-20 ball)",
+                    midterm: "Oraliq (0-30 ball)",
+                    final: "Final imtihon (0-40 ball)",
                   };
                   return (
                     <div key={field} className="space-y-1.5">
@@ -256,8 +256,8 @@ export default function AddGradePage() {
                       <Input
                         type="number"
                         min="0"
-                        max="100"
-                        step="0.1"
+                        max={field === "attendance" ? 10 : field === "homework" ? 20 : field === "midterm" ? 30 : 40}
+                        step="0.5"
                         value={form[field]}
                         onChange={(e) => setForm({ ...form, [field]: e.target.value })}
                         required

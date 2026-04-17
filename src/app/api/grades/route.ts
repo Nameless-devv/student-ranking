@@ -10,10 +10,10 @@ const gradeSchema = z.object({
   studentId: z.string().min(1),
   subjectId: z.string().min(1),
   semesterId: z.string().optional(),
-  attendance: z.number().min(0).max(100),
-  homework: z.number().min(0).max(100),
-  midterm: z.number().min(0).max(100),
-  final: z.number().min(0).max(100),
+  attendance: z.number().min(0).max(10),
+  homework: z.number().min(0).max(20),
+  midterm: z.number().min(0).max(30),
+  final: z.number().min(0).max(40),
 });
 
 export async function GET(req: NextRequest) {
