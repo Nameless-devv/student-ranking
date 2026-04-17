@@ -1,0 +1,107 @@
+// Student Ranking Automation System — Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  EXPORT
+}
+
+model User {
+  id         String     @id @default(cuid())
+  name       String
+  email      String     @unique
+  password   String
+  role       Role       @default(STUDENT)
+  // Email notification preferences
+  notifyAtRisk      Boolean @default(true)
+  notifyGradeUpdate Boolean @default(true)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  student    Student?
+  auditLogs  AuditLog[]
+}
+
+model Student {
+  id        String     @id @default(cuid())
+  userId    String     @unique
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  grades    Grade[]
+}
+
+model Subject {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  creditHours Int      @default(3) // for GPA calculation
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  grades      Grade[]
+}
+
+model Semester {
+  id        String   @id @default(cuid())
+  name      String   @unique // e.g. "2024 Spring"
+  year      Int
+  term      String   // "Spring" | "Fall" | "Summer"
+  startDate DateTime
+  endDate   DateTime
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  grades    Grade[]
+}
+
+model Grade {
+  id          String      @id @default(cuid())
+  studentId   String
+  student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId   String
+  subject     Subject     @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  semesterId  String?
+  semester    Semester?   @relation(fields: [semesterId], references: [id])
+  // Individual score components (0–100)
+  attendance  Float       @default(0)
+  homework    Float       @default(0)
+  midterm     Float       @default(0)
+  final       Float       @default(0)
+  // Derived fields — computed by application logic before save
+  totalScore  Float       @default(0)
+  gradeLetter String      @default("2")
+  // GPA points (A=4.0, B=3.0, C=2.0, D=1.0, F=0.0)
+  gradePoints Float       @default(0)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([studentId, subjectId, semesterId])
+}
+
+// Tracks every important admin/teacher action
+model AuditLog {
+  id         String      @id @default(cuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  action     AuditAction
+  entity     String      // "Grade", "Student", "Subject", etc.
+  entityId   String?
+  details    String?     // JSON string with old/new values
+  ipAddress  String?
+  createdAt  DateTime    @default(now())
+}

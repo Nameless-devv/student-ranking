@@ -1,0 +1,107 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { GraduationCap } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default function LoginPage() {
+  const { login } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await login(email, password);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Kirish muvaffaqiyatsiz");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="w-full max-w-md">
+        {/* Sarlavha */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blue-600 mb-4">
+            <GraduationCap className="h-8 w-8 text-white" />
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Talabalar Reytingi Tizimi
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Ta&apos;limiy Ko&apos;rsatkichlar Boshqaruvi
+          </p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Kirish</CardTitle>
+            <CardDescription>Hisobingizga kirish uchun ma&apos;lumotlarni kiriting</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="rounded-md bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 p-3 text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Elektron pochta</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="admin@school.edu"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Parol</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Kirilmoqda…" : "Kirish"}
+              </Button>
+            </form>
+
+            <div className="mt-4 text-center text-sm">
+              <span className="text-muted-foreground">Hisobingiz yo&apos;qmi?</span>{" "}
+              <Link href="/register" className="text-blue-600 hover:underline font-medium">
+                Ro&apos;yxatdan o&apos;tish
+              </Link>
+            </div>
+
+            {/* Demo ma'lumotlar */}
+            <div className="mt-4 rounded-md bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3 text-xs text-blue-700 dark:text-blue-400">
+              <strong>Demo:</strong> Namunaviy ma&apos;lumotlarni to&apos;ldirish uchun <code>npm run db:seed</code> ni ishga tushiring,
+              keyin <code>admin@school.edu</code> / <code>admin123</code> orqali kiring
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
