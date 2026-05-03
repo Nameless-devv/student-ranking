@@ -1,152 +1,228 @@
-# Student Ranking Automation System
+# Talabalar Reytingi Tizimi
 
-A production-ready web platform that automatically calculates, analyzes, and displays student rankings based on multiple academic metrics.
+Ta'limiy ko'rsatkichlarni avtomatik hisoblash, tahlil qilish va reyting ko'rsatish platformasi.
 
-## Tech Stack
+## Loyiha maqsadi
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 16 (App Router), TypeScript, Tailwind CSS v4, ShadCN-style UI |
-| Charts | Chart.js + react-chartjs-2 |
-| Backend | Next.js Route Handlers (API routes) |
-| ORM | Prisma 7 |
+O'quv muassasalarida talabalar baholarini raqamli boshqarish:
+
+- **Admin / O'qituvchi** — talabalar, baholar va semestrlarni boshqaradi
+- **Talaba** — o'z baholarini, GPA va reytingini ko'radi
+- **Avtomatik hisob** — 4 komponent bo'yicha umumiy ball hisoblanadi
+- **AI bashorat** — final imtihonga kerakli ball aniqlanadi
+- **Xavf tahlili** — past ko'rsatkichli talabalar avtomatik belgilanadi
+
+---
+
+## Baholash tizimi
+
+| Komponent | Max ball |
+|-----------|----------|
+| Davomat | 10 |
+| Uy vazifasi | 20 |
+| Oraliq imtihon | 30 |
+| Final imtihon | 40 |
+| **Jami** | **100** |
+
+| Umumiy ball | Baho |
+|-------------|------|
+| 86 – 100 | **5** — A'lo |
+| 71 – 85 | **4** — Yaxshi |
+| 56 – 70 | **3** — Qoniqarli |
+| 0 – 55 | **2** — Qoniqarsiz (xavf ostida) |
+
+---
+
+## Texnologiyalar
+
+| Qatlam | Texnologiya |
+|--------|-------------|
+| Frontend | Next.js 16, TypeScript, Tailwind CSS v4 |
+| Grafiklar | Chart.js, react-chartjs-2 |
+| Backend | Next.js API Routes |
+| ORM | Prisma 7 + PrismaPg adapter |
 | Database | PostgreSQL |
 | Auth | JWT (jsonwebtoken + bcryptjs) |
 
 ---
 
-## Grading Formula
+## O'rnatish
 
-```
-totalScore = 0.1 × attendance + 0.2 × homework + 0.3 × midterm + 0.4 × final
-```
+### Talablar
+- Node.js 22.12+
+- PostgreSQL 14+
 
-| Score Range | Grade |
-|-------------|-------|
-| 90 – 100    | A     |
-| 80 – 89     | B     |
-| 70 – 79     | C     |
-| 60 – 69     | D     |
-| < 60        | F     |
-
----
-
-## Quick Start
-
-### 1. Prerequisites
-
-- Node.js >= 18
-- PostgreSQL running locally
-
-### 2. Install dependencies
+### 1. Yuklab olish
 
 ```bash
+git clone https://github.com/Nameless-devv/student-ranking.git
+cd student-ranking
 npm install
 ```
 
-### 3. Configure environment
+### 2. Muhit o'zgaruvchilari
 
-Edit `.env`:
+`.env` faylini yarating:
 
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/student_ranking?schema=public"
-JWT_SECRET="change-me-in-production"
-JWT_EXPIRES_IN="7d"
-NEXT_PUBLIC_APP_URL="http://localhost:3000"
+DATABASE_URL=postgresql://USER:PAROL@localhost:5432/student_ranking
+JWT_SECRET=uzun_va_murakkab_kalit_bu_yerni_ozgartiring
+JWT_EXPIRES_IN=7d
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NODE_ENV=development
 ```
 
-### 4. Push schema to database
+### 3. Bazani sozlash
 
 ```bash
-npm run db:push
+npx prisma db push   # Jadvallarni yaratish
+npm run db:seed      # Namunaviy ma'lumotlarni yuklash
 ```
 
-### 5. Seed sample data
-
-```bash
-npm run db:seed
-```
-
-This creates:
-- **Admin**: `admin@school.edu` / `admin123`
-- **Teacher**: `teacher@school.edu` / `teacher123`
-- **10 Students** in 3 groups with grades for 5 subjects (password: `student123`)
-
-### 6. Run the dev server
+### 4. Ishga tushirish
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:3000
+Brauzerda: `http://localhost:3000`
 
 ---
 
-## Project Structure
+## Testlash
+
+### Demo hisoblar
+
+| Rol | Email | Parol |
+|-----|-------|-------|
+| Admin | admin@school.edu | admin123 |
+| O'qituvchi | teacher@school.edu | teacher123 |
+| Talaba | aziz@school.edu | student123 |
+
+### Sahifalar bo'yicha tekshirish
+
+| Sahifa | URL | Nima tekshiriladi |
+|--------|-----|-------------------|
+| Login | `/login` | Kirish, xato parol |
+| Dashboard | `/dashboard` | Statistika, grafiklar, xavf ostidagilar |
+| Talabalar | `/students` | Ro'yxat, qidiruv, guruh filtri |
+| Talaba profili | `/students/:id` | Grafiklar, GPA, AI bashorat, PDF yuklash |
+| Baho qo'shish | `/grades/new` | Ball kiritish, jonli hisoblash |
+| Reyting | `/leaderboard` | Tartiblangan ro'yxat |
+| Tahlil | `/analytics` | Grafiklar, eksport |
+| Semestrlar | `/semesters` | Yaratish, faollashtirish |
+
+### API testlash
+
+```bash
+# 1. Token olish
+TOKEN=$(curl -s -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@school.edu","password":"admin123"}' \
+  | python3 -c "import sys,json; print(json.load(sys.stdin)['token'])")
+
+# 2. Talabalar ro'yxati
+curl http://localhost:3000/api/students \
+  -H "Authorization: Bearer $TOKEN"
+
+# 3. Tahlil
+curl http://localhost:3000/api/analytics \
+  -H "Authorization: Bearer $TOKEN"
+
+# 4. Baho qo'shish
+curl -X POST http://localhost:3000/api/grades \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "studentId": "TALABA_ID",
+    "subjectId": "FAN_ID",
+    "attendance": 9,
+    "homework": 17,
+    "midterm": 25,
+    "final": 36
+  }'
+```
+
+### Eksport testlash
 
 ```
-student-ranking/
-├── prisma/
-│   ├── schema.prisma       # Database schema
-│   └── seed.ts             # Sample data
-├── src/
-│   ├── app/
-│   │   ├── (auth)/         # Login / Register pages (public)
-│   │   ├── (dashboard)/    # Protected dashboard pages
-│   │   │   ├── dashboard/
-│   │   │   ├── students/
-│   │   │   ├── leaderboard/
-│   │   │   ├── analytics/
-│   │   │   └── grades/new/
-│   │   └── api/            # Route Handlers
-│   ├── components/
-│   │   ├── ui/             # Reusable UI components
-│   │   └── layout/         # Sidebar, TopBar, ProtectedRoute
-│   ├── contexts/
-│   │   └── AuthContext.tsx # JWT auth state
-│   ├── hooks/
-│   │   └── useApi.ts       # Fetch helper
-│   ├── lib/
-│   │   ├── prisma.ts
-│   │   └── auth.ts
-│   ├── types/
-│   └── utils/
-│       └── grading.ts      # Score formula
-└── prisma.config.ts
+/api/export?type=students&format=xlsx    — Talabalar (Excel)
+/api/export?type=students&format=csv     — Talabalar (CSV)
+/api/export?type=grades&format=xlsx      — Baholar (Excel)
+/api/export?type=leaderboard&format=xlsx — Reyting (Excel)
 ```
 
 ---
 
-## API Endpoints
+## Foydalanuvchi rollari
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/api/auth/register` | — | Create account |
-| POST | `/api/auth/login` | — | Get JWT token |
-| GET | `/api/students` | Required | List students |
-| POST | `/api/students` | Admin/Teacher | Create student |
-| GET | `/api/students/:id` | Required | Student profile |
-| GET | `/api/grades` | Required | List grades |
-| POST | `/api/grades` | Admin/Teacher | Upsert grade (auto-calculates) |
-| GET | `/api/subjects` | Required | List subjects |
-| POST | `/api/subjects` | Admin/Teacher | Create subject |
-| GET | `/api/leaderboard` | Required | Ranked students |
-| GET | `/api/analytics` | Required | Aggregate stats |
+| Funksiya | Admin | O'qituvchi | Talaba |
+|----------|-------|------------|--------|
+| Dashboard va reyting | ✓ | ✓ | ✓ |
+| Talabalar ro'yxati | ✓ | ✓ | — |
+| Baho qo'shish/tahrirlash | ✓ | ✓ | — |
+| Tahlil va eksport | ✓ | ✓ | — |
+| Talaba o'chirish | ✓ | — | — |
+| Audit jurnali | ✓ | — | — |
 
 ---
 
-## User Roles
+## API endpointlari
 
-| Feature | Admin | Teacher | Student |
-|---------|-------|---------|---------|
-| Dashboard & leaderboard | ✓ | ✓ | ✓ |
-| Student list + profiles | ✓ | ✓ | — |
-| Add/edit grades | ✓ | ✓ | — |
-| Analytics | ✓ | ✓ | — |
-| Delete students | ✓ | — | — |
+| Metod | Yo'l | Auth | Tavsif |
+|-------|------|------|--------|
+| POST | `/api/auth/register` | — | Hisob yaratish |
+| POST | `/api/auth/login` | — | JWT token olish |
+| GET | `/api/students` | Kerak | Talabalar ro'yxati |
+| GET | `/api/students/:id` | Kerak | Talaba profili |
+| GET | `/api/students/:id/gpa` | Kerak | GPA hisoblash |
+| POST | `/api/grades` | Admin/Teacher | Baho qo'shish |
+| GET | `/api/analytics` | Kerak | Umumiy statistika |
+| GET | `/api/leaderboard` | Kerak | Reyting |
+| POST | `/api/predict` | Kerak | AI bashorat |
+| GET | `/api/export` | Kerak | Excel/CSV eksport |
+| GET | `/api/semesters` | Kerak | Semestrlar |
+| GET | `/api/subjects` | Kerak | Fanlar |
 
 ---
 
-## AI Feature: At-Risk Detection
+## Deploy (Render)
 
-Students whose average `totalScore` < 60 are automatically flagged as *at-risk* and shown on the Dashboard and Analytics pages.
+1. [render.com](https://render.com) → **New Web Service** → GitHub repo ulash
+2. **Environment:** Docker
+3. **PostgreSQL** servis yarating
+4. Environment variables:
+   ```
+   DATABASE_URL=postgresql://...
+   JWT_SECRET=...
+   NODE_ENV=production
+   NEXT_PUBLIC_APP_URL=https://sizning-app.onrender.com
+   ```
+5. Deploy tugagach seed (tashqi URL bilan):
+   ```bash
+   DATABASE_URL="postgresql://...external..." npm run db:seed
+   ```
+
+---
+
+## Loyiha tuzilmasi
+
+```
+src/
+├── app/
+│   ├── (auth)/           # Login, ro'yxatdan o'tish
+│   ├── (dashboard)/      # Asosiy sahifalar
+│   │   ├── dashboard/
+│   │   ├── students/
+│   │   ├── grades/new/
+│   │   ├── leaderboard/
+│   │   ├── analytics/
+│   │   ├── semesters/
+│   │   ├── notifications/
+│   │   └── audit-logs/
+│   └── api/              # Backend API route'lari
+├── components/           # UI komponentlar
+├── lib/                  # Prisma, auth, email, audit
+├── utils/                # Baholash logikasi (grading.ts)
+└── types/                # TypeScript turlar
+```
