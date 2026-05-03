@@ -58,11 +58,11 @@ async function main() {
 
   // ── Admin user ────────────────────────────────────────────────────────────
   await prisma.user.upsert({
-    where: { email: "admin@school.edu" },
+    where: { email: "admin1@school.edu" },
     update: {},
     create: {
       name: "System Admin",
-      email: "admin@school.edu",
+      email: "admin1@school.edu",
       password: await bcrypt.hash("admin123", 12),
       role: "ADMIN",
     },

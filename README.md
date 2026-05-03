@@ -95,7 +95,7 @@ Brauzerda: `http://localhost:3000`
 
 | Rol | Email | Parol |
 |-----|-------|-------|
-| Admin | admin@school.edu | admin123 |
+| Admin | admin1@school.edu | admin123 |
 | O'qituvchi | teacher@school.edu | teacher123 |
 | Talaba | aziz@school.edu | student123 |
 
