@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, Users, Trophy, BarChart3,
-  GraduationCap, BookOpen, LogOut, Calendar,
+  BookOpen, LogOut, Calendar,
   Bell, Shield,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,10 +33,20 @@ export default function Sidebar() {
     <aside className="flex h-screen w-64 flex-col bg-gray-900 dark:bg-gray-950 text-white">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-700">
-        <GraduationCap className="h-8 w-8 text-blue-400" />
+        <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blue-600">
+          <svg viewBox="0 0 32 32" fill="none" className="h-6 w-6" xmlns="http://www.w3.org/2000/svg">
+            {/* Kitob */}
+            <rect x="5" y="6" width="22" height="20" rx="2" fill="white" fillOpacity="0.15"/>
+            <rect x="5" y="6" width="22" height="20" rx="2" stroke="white" strokeWidth="1.5"/>
+            <line x1="16" y1="6" x2="16" y2="26" stroke="white" strokeWidth="1.2" strokeOpacity="0.5"/>
+            {/* Yulduz / Reyting belgisi */}
+            <path d="M16 9 L17.2 12.6 L21 12.6 L18 14.8 L19.1 18.4 L16 16.2 L12.9 18.4 L14 14.8 L11 12.6 L14.8 12.6 Z"
+              fill="white"/>
+          </svg>
+        </div>
         <div>
-          <p className="font-bold text-sm leading-tight">Talabalar Reytingi</p>
-          <p className="text-xs text-gray-400">Avtomatlashtirish Tizimi</p>
+          <p className="font-bold text-sm leading-tight">EduRanking</p>
+          <p className="text-xs text-gray-400">Baholash Tizimi</p>
         </div>
       </div>
 
