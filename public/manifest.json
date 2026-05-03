@@ -1,7 +1,7 @@
 {
-  "name": "Student Ranking Automation System",
-  "short_name": "SRAS",
-  "description": "Academic performance management platform",
+  "name": "EduRanking",
+  "short_name": "EduRanking",
+  "description": "Ta'limiy ko'rsatkichlarni baholash tizimi",
   "start_url": "/dashboard",
   "display": "standalone",
   "background_color": "#ffffff",

@@ -8,10 +8,10 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Student Ranking Automation System",
-  description: "Automatically calculate, analyze, and display student rankings based on academic metrics.",
+  title: "EduRanking",
+  description: "Ta'limiy ko'rsatkichlarni avtomatik hisoblash va baholash tizimi.",
   manifest: "/manifest.json",
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "SRAS" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "EduRanking" },
   formatDetection: { telephone: false },
 };
 
